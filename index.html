@@ -1,0 +1,2571 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elenco Domande e Risposte</title>
+    <style>
+        /* ===========================
+       Variabili CSS
+    =========================== */
+        :root {
+            --primary-color: #0073e6;
+            /* Colore originale delle domande */
+            --secondary-color: #fff;
+            --background-color: #f4f4f4;
+            --text-color: #333;
+            --font-family: Arial, sans-serif;
+            --max-width: 800px;
+            --border-radius: 5px;
+            --padding: 1rem;
+            --font-size-base: 1rem;
+            --line-height-base: 1.5;
+
+            /* Nuove variabili per migliorare la leggibilità */
+            --question-color: #003366;
+            /* Nuovo colore per le domande */
+            --answer-font-weight: bold;
+            /* Aumenta lo spessore del carattere delle risposte */
+            --answer-font-size: 1.2rem;
+            /* Aumenta la dimensione del font delle risposte */
+            --question-font-size: 1.2rem;
+            /* Aumenta la dimensione del font delle domande */
+        }
+
+        /* ===========================
+       Stili Globali
+    =========================== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            margin: 0;
+            padding-top: 70px;
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-base);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            font-size: 1.8rem;
+            margin: 0 0 1rem 0;
+            font-weight: bold;
+        }
+
+        /* ===========================
+       Barra di Navigazione Alfabetica
+    =========================== */
+        .alphabet-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--primary-color);
+            padding: 0.5rem;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .alphabet-nav a {
+            color: var(--secondary-color);
+            margin: 0 0.5rem;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .alphabet-nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===========================
+       Barra di Ricerca a Scomparsa
+    =========================== */
+        .search-bar-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        #search-toggle {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 0.5rem;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #search-bar {
+            margin-top: 0.5rem;
+        }
+
+        #search-bar input[type="text"] {
+            width: 200px;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* ===========================
+       Contenitore FAQ
+    =========================== */
+        .faq-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* ===========================
+       Domande e Risposte
+    =========================== */
+        .question,
+        .answer {
+            padding: var(--padding);
+            border-radius: var(--border-radius);
+        }
+
+        .question {
+            background-color: var(--question-color);
+            /* Usa il nuovo colore */
+            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: var(--question-font-size);
+            /* Aumenta la dimensione del font */
+        }
+
+        .answer {
+            border: 1px solid #ddd;
+            border-top: none;
+            background-color: var(--secondary-color);
+            margin-bottom: 1rem;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            font-weight: var(--answer-font-weight);
+            /* Aumenta lo spessore del carattere */
+            font-size: var(--answer-font-size);
+            /* Aumenta la dimensione del font */
+            color: var(--text-color);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* ===========================
+       Responsive Design
+    =========================== */
+        @media (max-width: 768px) {
+            :root {
+                --font-size-base: 1.2rem;
+                --line-height-base: 1.6;
+                --padding: 1.5rem;
+                --answer-font-size: 1.4rem;
+                --question-font-size: 1.4rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .search-bar-container input[type="text"] {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --font-size-base: 1.4rem;
+                --line-height-base: 1.7;
+                --padding: 1.5rem;
+                --answer-font-size: 1.6rem;
+                --question-font-size: 1.6rem;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .search-bar-container input[type="text"] {
+                font-size: 1.3rem;
+            }
+        }
+
+
+        /* Mantieni gli stili esistenti per .search-bar-container */
+        .search-bar-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        /* Nuova classe per il contenitore dei pulsanti */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Stili per entrambi i pulsanti */
+        #button-a,
+        #search-toggle {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 0.5rem;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Barra di Navigazione Alfabetica -->
+    <div class="alphabet-nav">
+        <a href="#letter-A">A</a>
+        <a href="#letter-B">B</a>
+        <a href="#letter-C">C</a>
+        <a href="#letter-D">D</a>
+        <a href="#letter-E">E</a>
+        <a href="#letter-F">F</a>
+        <a href="#letter-G">G</a>
+        <a href="#letter-H">H</a>
+        <a href="#letter-I">I</a>
+        <a href="#letter-J">J</a>
+        <a href="#letter-K">K</a>
+        <a href="#letter-L">L</a>
+        <a href="#letter-M">M</a>
+        <a href="#letter-N">N</a>
+        <a href="#letter-O">O</a>
+        <a href="#letter-P">P</a>
+        <a href="#letter-Q">Q</a>
+        <a href="#letter-R">R</a>
+        <a href="#letter-S">S</a>
+        <a href="#letter-T">T</a>
+        <a href="#letter-U">U</a>
+        <a href="#letter-V">V</a>
+        <a href="#letter-W">W</a>
+        <a href="#letter-X">X</a>
+        <a href="#letter-Y">Y</a>
+        <a href="#letter-Z">Z</a>
+    </div>
+
+    <h1>Elenco Domande e Risposte</h1>
+
+    <div class="faq-container" id="faq-container">
+        <div class="faq-item">
+            <div class="question" id="letter-A">Alti livelli di lipasi nel siero indicano un danno</div>
+            <div class="answer">Pancreatico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Alti livelli di Lp(a) sono associati a</div>
+            <div class="answer">Aumentato rischio aterosclerotico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-C">CA125 è un marcatore tumorale</div>
+            <div class="answer">Ovarico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Circa il 75% del colesterolo è nel sangue</div>
+            <div class="answer">Nella forma esterificata</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Con alti livelli di colesterolo le proteine SREBP sono</div>
+            <div class="answer">Rimane nel reticolo endoplasmatico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Con architettura del dosaggio immunologico s'intende il processo attraverso cui si
+                evidenzia</div>
+            <div class="answer">L'analita</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Con i metodi analitici usati nei laboratori diagnostici si arriva generalmente a
+                determinare</div>
+            <div class="answer">La concentrazione di una sostanza in un campione</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Con il termine cancro si indica</div>
+            <div class="answer">I tumori maligni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Con il termine di misurazione si intende</div>
+            <div class="answer">Tutte le risposte precedenti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Cosa significa l'acronimo POCT</div>
+            <div class="answer">Point of Care Testing</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-D">Della creatinchisasi esisotono</div>
+            <div class="answer">Tre isoenzimi diversi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-F">Fondamentalmente in un laboratorio di analisi medica si eseguono</div>
+            <div class="answer">Delle misurazioni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-G">Gli adenomi sono tumori</div>
+            <div class="answer">Del tessuto epiteliale</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli AGE sono gel di</div>
+            <div class="answer">Agarosio</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli aghi per i prelievi hanno un gauge</div>
+            <div class="answer">19-23</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli allergeni di classe I</div>
+            <div class="answer">Sono prevalentemente allergeni conformazionali</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli analiti posso variare in funzione</div>
+            <div class="answer">Tutte le risposte precedenti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli anticoagulanti sono necessari per ottenere</div>
+            <div class="answer">Il plasma</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli anticorpi anti-dsDNA possono essere misurati con metodi</div>
+            <div class="answer">ELISA</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli anticorpi del sistema ABO</div>
+            <div class="answer">Compaiono alcuni mesi dopo la nascita</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli anticorpi hanno una caratteristica struttura</div>
+            <div class="answer">Quaternaria a forma di Y</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli anticorpi più comunemente utilizzati per lo sviluppo dei metodi immunochimici sono
+            </div>
+            <div class="answer">IgG</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli anticorpi policlonali si ottengono</div>
+            <div class="answer">Immunizzando un animale con l'antigene contro cui si vuole produrre l' anticorpo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli antigeni del gruppo ABO sono costituiti da</div>
+            <div class="answer">Polisaccaridi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli antigeni del gruppo Rh</div>
+            <div class="answer">Sono espressi solo sulla membrana degli eritrociti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli antigeni sono riconosciuti dalle regioni</div>
+            <div class="answer">Variabili degli anticorpi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli autoanticorpi principali da ricercare nella diagnosi del diabete sono</div>
+            <div class="answer">Decarbossilasi dell'acido glutammico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli elementi corpuscolati si conservano meglio nelle urine</div>
+            <div class="answer">Più concentrate</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli emangiomi sono tumori</div>
+            <div class="answer">Dell'endotelio dei vasi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli enzimi si possono trovare nel sangue</div>
+            <div class="answer">Sia in condizioni fisiologiche che patologiche</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli enzimi sono delle macromolecole proteiche che</div>
+            <div class="answer">Tutte le risposte precedenti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli enzimi vengono misurati per</div>
+            <div class="answer">La loro attività</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli errori casuali sono</div>
+            <div class="answer">Parzialmente eliminabili</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli errori di misura non sono dovuti a</div>
+            <div class="answer">Nessuna delle risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli errori sistematici dipendono</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli esami di primo livello nella diagnosi tiroidea sono</div>
+            <div class="answer">TSH, fT4</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli ormoni ipofisari possono agire stimolando il rilascio di altri ormoni sintetizzati
+                da altre ghiandole. Indicare l'accoppiamento sbagliato</div>
+            <div class="answer">FSH-testosterone</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli ormoni tiroidei vaggiano nel sangue</div>
+            <div class="answer">Leagti a sieroproteine</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli screening obbligatori neonatali in Italia riguardano</div>
+            <div class="answer">La fenilchetonuria</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Gli spazzini del sangue sono</div>
+            <div class="answer">Le HDL</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-I">I calibratori generalmente possono essere</div>
+            <div class="answer">Stabili limitatamente se conservati a temperatura ambiente</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I campioni itterici contengono elevate concentrazioni di</div>
+            <div class="answer">Bilirubina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I chilomicroni ricevono le ApoE e ApoC da</div>
+            <div class="answer">HDL</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I chilomicroni si formano</div>
+            <div class="answer">Nell'intestino</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I cilindri ialini si possono trovare più facilmente</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I coenzimi durante la reazione enzimatica</div>
+            <div class="answer">Modificano la loro struttura ma possono essere riconvertiti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I componenti maggiori nel sangue sono</div>
+            <div class="answer">Eritrociti>Piastrine>Linfociti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I cristalli di ossalato di calcio si trovano in urine</div>
+            <div class="answer">Acide</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I dosaggi immunochimici si basano sulla</div>
+            <div class="answer">Sulla specificità della reazione antigene-anticorpo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I gascromatografi si basano su (indicare la risposta sbagliata)</div>
+            <div class="answer">Metodi turbidimetrici</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I geni che codificano per gli antigeni ABO e Rh sono</div>
+            <div class="answer">Sui cromosomi 9 e 1</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I geni dell'HMC di classe I non sono espressi</div>
+            <div class="answer">Dagli eritrociti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I granulociti si differenziano</div>
+            <div class="answer">In base all'affinità dei granuli per diversi coloranti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I gruppi sanguigni sono caratterizzati</div>
+            <div class="answer">Dalla presenza di particolari antigeni sulle emazie</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I gruppi sanguigni sono caratterizzati</div>
+            <div class="answer">Dalla presenza di particolari antigeni nel siero</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I leucociti più numerosi sono</div>
+            <div class="answer">Linfociti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I linfociti natural killer</div>
+            <div class="answer">Non esprimono il recettore di membrana T e non esprimono anticorpi di membrana</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I linfociti T suppressor</div>
+            <div class="answer">Sopprimono la risposta infiammatoria</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I livelli di creatinina presenti nell'urina è più alta</div>
+            <div class="answer">Negli uomini</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I livelli di ossigenazione del sangue dipendono da</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I livelli di TSH sono maggiorri</div>
+            <div class="answer">Al mattino</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I livelli di urea si possono misurare con metodi</div>
+            <div class="answer">Enzimatici</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I metodi a sandwich sono anche detti metodi:</div>
+            <div class="answer">Non competitivi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I metodi automatici di conta degli elementi corpuscolati del sangue si basano su</div>
+            <div class="answer">Tutte le precedenti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I metodi competitivi possono essere definiti</div>
+            <div class="answer">Difetto di anticorpo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I metodi indiretti utilizzati nei laboratori diagnostici consentono di</div>
+            <div class="answer">Tutte le risposte precedenti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I metodi non competitivi a differenza dei metodi competitivi presentano</div>
+            <div class="answer">Una maggiore specificità e una maggiore sensibilità</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I metodi più utilizzati per separare il libero dal legato sono</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I PAGE sono gel di</div>
+            <div class="answer">Acrilamide</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I peptidi natriuretici cardiaci (selezionare la risposta sbagliata)</div>
+            <div class="answer">Sono più alti negli uomini</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I polimorfismi a singola base sono indicati con l'acronimo</div>
+            <div class="answer">SNP</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I primi leucociti ad arrivare sul sito dell'infiammazione sono</div>
+            <div class="answer">I neutrofili</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I principali marcatori di fibrosi cardiaca sono</div>
+            <div class="answer">cST2</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I principali marcatori di ictus utilizzati sono (segnare risposta sbagliata)</div>
+            <div class="answer">Troponina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I traccianti fluorescenti sono molecole che eccitate con una fonte luminosa di una
+                certa lunghezza d'onda, riemettono una luce ad</div>
+            <div class="answer">Una lunghezza d'ona generalmente maggiore</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I trigliceridi sono lipidi che</div>
+            <div class="answer">Nessuna delle risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I vacutainer con il tappo giallo si usano per ottenere</div>
+            <div class="answer">Siero</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I valori del colesterolo dovrebbero essere al di sotto</div>
+            <div class="answer">190 mg/dL</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I valori di calcemia sono compresi tra</div>
+            <div class="answer">8,5-10,2 mg/dL</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I valori di emoglobina glicati sono più alti</div>
+            <div class="answer">Nei bambini</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I valori di riferimento del fibrinogeno sono compresi tra</div>
+            <div class="answer">200-430 mg/dL</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I valori di riferimento della densità relativa delle urine sono</div>
+            <div class="answer">1007-1035 g/L</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I valori di riferimento di una grandezza biologica sono</div>
+            <div class="answer">Quei valori che più frequentemente vengono riscontrati una popolazione sana.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I valori ottimali di emoglobina negli uomini sono superiori a</div>
+            <div class="answer">130 g/L</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I vantaggi dei metodi in vitro nelle diagnosi delle allergie sono (segnare la risposta
+                sbagliata)</div>
+            <div class="answer">I costi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I vantaggi dei traccianti radioattivi sono</div>
+            <div class="answer">Segnale molto specifico e ingombro sterico molto basso</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">I vasi capillari hanno</div>
+            <div class="answer">Pareti sottili e pressione interna molto bassa</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il ?-Mercaptoetanolo è un agente</div>
+            <div class="answer">Nessuna delle risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">IL caffè prima di un prelievo può alterare i livelli di glucosio per</div>
+            <div class="answer">La presenza di caffeina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il calcitriolo regola la calcemia agendo su</div>
+            <div class="answer">Intestino</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il Clotting Time (CT) è</div>
+            <div class="answer">Il tempo tra l'aggiunta dell'attivatore e la formazione del coagulo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il colesterolo presente nelle membrane cellulare serve a</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il conteggio dei reticolociti fornisce un'indicazione</div>
+            <div class="answer">Sulla produzione di eritrociti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il core centrale delle lipoproteine contiene maggiormente</div>
+            <div class="answer">Trigliceridi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il cortisolo si misura spesso due volte al giorno, perché</div>
+            <div class="answer">Ha un ritmo circadiano accentuato</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il cortisolo si misura spesso due volte al giorno, perché</div>
+            <div class="answer">Ha un ritmo circadiano accentuato</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il cortisolo si può misurare su campioni di</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il cortisolo, l'ormone dello stress, presenza delle variazioni</div>
+            <div class="answer">Diurne</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il diabete di tipo I è caratterizzato</div>
+            <div class="answer">Da assenza di insulina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il diabete mellito di tipo 2 è causato maggiormente da</div>
+            <div class="answer">Una riduzione dell'insulina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il DNA amplificato tramite la reazione di PCR può essere visualizzto utilizzando</div>
+            <div class="answer">Un intercalante</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il dosaggio del GH si basa su medodi</div>
+            <div class="answer">Immunologici</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il fattore LXR promuove</div>
+            <div class="answer">La sintesi di LDLR</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il fattore PCSK9</div>
+            <div class="answer">Favorisce la degradazione delle LDLR</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il fattore reumatoide è una</div>
+            <div class="answer">Nessuna delle precedenti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il fenotipo Bombay è caratterizzato dall'assenza dell'antigene</div>
+            <div class="answer">H</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il fumo di sigaretta prima di un prelievo può aumentare i livelli di</div>
+            <div class="answer">Leucociti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il galattosio è lo zucchero immunodominante per</div>
+            <div class="answer">L'antigene B</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il glicerolo serve per</div>
+            <div class="answer">Appesantire le proteine</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il glucagone è rilasciato dalle cellule del pancreas</div>
+            <div class="answer">alfa</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il Gruppo Rh è costituito da circa</div>
+            <div class="answer">50 antigeni diversi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il gruppo sanguigno meno diffuso è</div>
+            <div class="answer">AB</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il gruppo sanguigno più diffuso è</div>
+            <div class="answer">O</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il livelli di IGF-1</div>
+            <div class="answer">Sono costanti durante la giornata</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il livello di colesterolo</div>
+            <div class="answer">E' più alto nelle donne</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il luminolo emette fotoni di energia in presenza di</div>
+            <div class="answer">Una perossidasi e acqua ossigenata</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il maggiorvantaggio della CE è</div>
+            <div class="answer">Rapidità di analisi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il marcatore tumorale CEA è maggiormente espresso</div>
+            <div class="answer">Durante la vita fetale</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il maximun clot firmess definisce (MCF)</div>
+            <div class="answer">Definisce l'ampiezza massima del coagulo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il metodo CHOD/POD/Trinder permette di misurare</div>
+            <div class="answer">Tutto il colesterolo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il metodo di Clauss è utilizzato per misurare i livelli di</div>
+            <div class="answer">Fibrinogeno</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il metodo di sequenziamento di Sanger è un metodo</div>
+            <div class="answer">Enzimatico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il metodo di sequenziamento diMaxam-Gilbert è un metodo</div>
+            <div class="answer">Chimico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il metodo migliore per misurare il GFR è attraverso la somministrazione di</div>
+            <div class="answer">Inulina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il metodo Trinder è un metodo che si basa sulla produzione di</div>
+            <div class="answer">H2O2</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il mieloma multiplo colpisce prevalentemente le persone sopra i</div>
+            <div class="answer">70 anni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il misurando è</div>
+            <div class="answer">L'oggetto o il fenomeno da misurare</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il paratormone è regolato dai livelli plasmatici di</div>
+            <div class="answer">Calcio</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il paratormone è rilasciato dalle cellule</div>
+            <div class="answer">Principali</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il paratormone è sintetizzato come</div>
+            <div class="answer">Pre-pro-paratormone</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il peso specifico delle urine è associato a</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il pH delle urine al mattino è normalmente</div>
+            <div class="answer">Più acido</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il pH delle urine normalmente varia tra</div>
+            <div class="answer">4,5-7,5</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il pH nel sangue deve essere compreso tra</div>
+            <div class="answer">7,35-7,45</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">IL piastrinocrito è la percentuale di volume occupato dalle piastrine</div>
+            <div class="answer">Sul sangue</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il pirosequenziamento è una tecnica per sequenziare</div>
+            <div class="answer">Il DNA</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il plasma si ottiene centrifugando il sangue</div>
+            <div class="answer">Con anticoagulanti a 3000 rpm</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il plasma è simile</div>
+            <div class="answer">Al sangue ma senza la frazione corpuscolata</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il primo marcatore cardiaco ad essere utilizzato è stato</div>
+            <div class="answer">Lattato deidrogenasi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il primo tappo piastrinico non è sufficiente a fermare l'emorragia</div>
+            <div class="answer">Nelle arterie</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il principale vantaggio dei metodi competitivi è che possono riconoscere</div>
+            <div class="answer">Qualsiasi antigene indipendentemente dalle dimensioni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il principio su cui si basa la Real Time PCR è che ad ogni ciclo la quantià di
+                fluorescenza è</div>
+            <div class="answer">Raddoppiata</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il PRIST è un metodo di tipo</div>
+            <div class="answer">Immunologico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il recettore delle LDL riconosce le apolipoproteine</div>
+            <div class="answer">ApoB</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il rene produce l'ormone</div>
+            <div class="answer">Eritropoietina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il rilascio del GH è inibito da</div>
+            <div class="answer">IGF-1</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il ruolo della troponina I è quello di</div>
+            <div class="answer">Impedire il legame tra dell'actina con la miosina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il ruolo primario del Tissue Factor è di</div>
+            <div class="answer">Attivare il fattore della coagulazione VII</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il ruolo principale dei trigliceridi è</div>
+            <div class="answer">Riserva</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il ruolo principale dell'aptoglobina è</div>
+            <div class="answer">Antiossidante</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il sangue capillare contiene</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il sangue costituisce</div>
+            <div class="answer">8% del peso del corpo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il sangue è un tessuto</div>
+            <div class="answer">Connettivale</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il segnale misurato da un metodo non competitivo è graficamente rappresentato da</div>
+            <div class="answer">Una sigmoide</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il siero è simile</div>
+            <div class="answer">Al plasma ma senza i fattori della coagulazione</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il sistema linfatico</div>
+            <div class="answer">Ha una funzione drenante</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il test di misurazione della glicemia è caratterizzato dall'uso di quale ennzima</div>
+            <div class="answer">Esochinasi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il vantaggio del FEIA cap è che si possono</div>
+            <div class="answer">Testare più di 650 allergeni diversi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Il volume del sangue varia in funzione</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">In biochimica clinica vengono prevalentemente utilizzati</div>
+            <div class="answer">Sia metodi diretti che indiretti di misurazione</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">In biochimica clinica è importante stabilire</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">In caso di aumento dell'ALT con AST nei limiti si può pensare a pronlemi per</div>
+            <div class="answer">Fegato</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">In condizioni fisiologiche i livelli di albumina nelle urine è inferiore a</div>
+            <div class="answer">10 mg/L</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">In termini di appropriatezza, sono maggiori gli esami diagnostichi</div>
+            <div class="answer">Sottoutilizzati</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">In un elettroforesi su campione sierico l'albumina rispetto alla gamma globuline migra
+            </div>
+            <div class="answer">Più velocemente</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">In un sistema elettroforetico le molecole si separano tra di loro in base</div>
+            <div class="answer">Alla carica</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Individuare la coppia marcatore tumore non corretta</div>
+            <div class="answer">TG-pancreas</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-L">L'ACR misura il rapporto tra</div>
+            <div class="answer">Albumina e creatinina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'acromegalia è causata da</div>
+            <div class="answer">Ipersecrezione di GH nell'adulto</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'acronimo RAST indica</div>
+            <div class="answer">Radio Allergo Sorbent Test</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'adenoipofisi rilascia</div>
+            <div class="answer">L'ormone della crescita</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'aggregazione delle piastrine è favorita da</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'albumina può diminuire nel sangue in seguito a</div>
+            <div class="answer">Nessuna delle risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'albumina è prodotta maggiormente nel</div>
+            <div class="answer">Fegato</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'alfa1-antitripsina ha un ruolo protettivo nei confronti</div>
+            <div class="answer">Dei polmoni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'allele B codifica per</div>
+            <div class="answer">Galattosiltransferasi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'amilasi è un enzima maggiormente espresso nel</div>
+            <div class="answer">Pancreas e ghiandole salivari</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'analisi della Real Time PCR si effettua durante la fase</div>
+            <div class="answer">Lineare</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'anticoagulante più usato per l'esame dell'emostasi è</div>
+            <div class="answer">Il citrato di sodio</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'anticoagulante utilizzato nelle provette per l'esame emocromocitometrico è</div>
+            <div class="answer">EDTA</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'antigene D del sistema Rh è presente</div>
+            <div class="answer">85% polazione</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'antigene è una molecola che</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'antigeni D è costituito da una molecola di natura</div>
+            <div class="answer">Proteica</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'aplotipo più comune nei pazienti celiaci è</div>
+            <div class="answer">DQ2</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'appropriatezza nella medicina di laboratorio riguarda soprattutto:</div>
+            <div class="answer">Appropriatezza prescrittiva</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'assenza di componente monoclonale</div>
+            <div class="answer">Non garantisce l'assenza di una gammopatia</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'attività di un enzima determina</div>
+            <div class="answer">Diminuzione del substrato e del prodotto</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'aumento della temperatura in un sistema elettroforetico</div>
+            <div class="answer">Nessuna delle risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'eccessivo consumo di alcol è maggiormente considerato un fattore di rischio per
+            </div>
+            <div class="answer">Sia per l'ictus emorragico che ischemico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'ECMU è l'esame</div>
+            <div class="answer">Delle urine</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'EDTA altera la morfologia</div>
+            <div class="answer">Delle piastrine</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'elettroforesi 2D combina</div>
+            <div class="answer">L'isolettrofocalizzazione e la SDS-PAGE</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'elettroforesi su acetato di cellulosa è utilizzata particolarmente in ambito clinico
+                per separare</div>
+            <div class="answer">Proteine plasmatiche</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'ematuria è caratterizzata da</div>
+            <div class="answer">Presenza di eritrociti interi o danneggiati nelle urine</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'emofilia A è dovuta lla carenza del fattore</div>
+            <div class="answer">FVIII</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'emofilia B è dovuta lla carenza del fattore</div>
+            <div class="answer">FIX</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'emogasanalisi non è richiesta per la patologie</div>
+            <div class="answer">Epatiche</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'emoglobina fetale</div>
+            <div class="answer">Rappresenta meno del 2% dell'emoglobina presente nell'adulto</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'emoglobina è formata da</div>
+            <div class="answer">4 globine e 4 gruppi eme</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'emostasi riguarda lo studio dei fattori</div>
+            <div class="answer">Coagulanti e anticoagulanti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'eparina altera la morfologia</div>
+            <div class="answer">Degli eritrociti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'equazione CKD-EPI è poco affidabile per le persone con</div>
+            <div class="answer">Età superiore ai 70 anni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'errore può essere definito come la differenza tra</div>
+            <div class="answer">Il valore vero e il valore misurato</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'esame maggiormente indicato nella diagnosi del diabete è</div>
+            <div class="answer">La misurazione dei livelli di glicemia a digiuno</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'esame più indicato per individuare le una componente monoclonale è</div>
+            <div class="answer">L'elettroforesi delle sieroproteine</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'esercizio fisico comporta uno spostamento dei liquidi dal comparto</div>
+            <div class="answer">Intravasale a quello Interstiziale</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'imprecisione è la misura degli errori</div>
+            <div class="answer">Casuali</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'insieme dei sistemi ABO e Rh danno origine a</div>
+            <div class="answer">18 genotipi e 8 fenotipi diversi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'insulina è rilasciata dalle cellule del pancreas</div>
+            <div class="answer">beta</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'ipercolesterolemia famiglaire affligge 1 persona ogni</div>
+            <div class="answer">500</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'ipercolesterolemia famigliare è causata da geni che codificano per le proteine
+                legate al metabolismo dei</div>
+            <div class="answer">LDL</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'ipertiroidismo è caratterizzato da</div>
+            <div class="answer">Eccessiva perdita di peso</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'ipofisi controlla</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'ipostenuria può essere causata da</div>
+            <div class="answer">Terapia diuretica</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'ipotiroidismo è caratterizzato da</div>
+            <div class="answer">Ritenzione idrica</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'ipotiroidismo è diagnosticato da</div>
+            <div class="answer">TSH alto, T4 basso, T3 basso</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'MCHC è il rapporto tra</div>
+            <div class="answer">La concentrazione di emoglobina e l'ematocrito</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'MCV è il rapporto tra</div>
+            <div class="answer">L'ematocrito e il numero dei globuli rossi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'NT-proBNP e utile nella diagnosi di</div>
+            <div class="answer">Scompenso cardiaco</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'obesità è maggiormente considerato un fattore di rischio per</div>
+            <div class="answer">L'ictus ischemico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'ossimetro è uno strumento utile per misurare</div>
+            <div class="answer">La saturazione dell'ossigeno</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'ossitocina</div>
+            <div class="answer">Nell'uomo controlla le cellule muscolari della prostata</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'RDW-SD è un indicatore delle variazione del</div>
+            <div class="answer">Volume degli eritrociti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">L'urogenesi nell'uomo è un indice</div>
+            <div class="answer">Del catabolismo proteico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La ApoA-1 e la principale proteina dei</div>
+            <div class="answer">HDL</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La ApoB48 e la principale proteina dei</div>
+            <div class="answer">Chilomicroni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La beta 2 microglobulina è presente prevalentemente sulla superficie</div>
+            <div class="answer">Dei linfociti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La biosintesi delgli ormoni tiroideii dipende dalla disponibilità di</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La bollitura prima di caricare il campione in un gel elettroforetico serve a</div>
+            <div class="answer">Denaturare le proteine</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La caffeina è un inibitore della</div>
+            <div class="answer">Fosfodiesterasi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La calcemia è regolata da</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La calibrazione è</div>
+            <div class="answer">un'operazione logico-pratica che stabilisce il rapporto tra il segnale e una grandezza
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La camera di Burker è usata per contare in modo particolare</div>
+            <div class="answer">Qualsiasi cellula</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La capacità di risoluzione di gel segue il seguente ordine</div>
+            <div class="answer">Acrilamide>Agarosio>Acetato</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La caratteristica principale della Taq polimerasi usata nella PCR è</div>
+            <div class="answer">La termostabilità</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La ceruplasmina aumenta in seguito a</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La ceruplasmina è il principale trasportatore del</div>
+            <div class="answer">Rame</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La coagulazione e l'aggregazione piastrinica sono due fenomeni</div>
+            <div class="answer">Distinti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La colangite biliare primitiva è un'epatopatia colestatica cronica che interessa
+                prevalentemente</div>
+            <div class="answer">Le donne sopra i 50 anni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La colorazione May-Grunwld Giemsa serve per colorare</div>
+            <div class="answer">Tutte e tre le popolazioni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La composizione dell'urine dipende</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La concentrazione degli ioni idrogeno</div>
+            <div class="answer">E' direttamente proporzionale alla pCO2</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La creatinchinasi è un enzima</div>
+            <div class="answer">Dimerico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La creatinchinasi è un enzima che catalizza la</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La creatinchinasi, in assenza di patologie, aumenta per</div>
+            <div class="answer">Esercizio fisico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La curva di melting si utilizza per</div>
+            <div class="answer">Verificare la specificità della Real Time PCR</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La denaturazione del DNA avviene alla temperaturà di</div>
+            <div class="answer">95°C</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La determinazione dell'ematuria si basa</div>
+            <div class="answer">Sull'attività psedo-ossigenasica dell'emoglobina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La diagnosi delle malattie autoimmuni si ha</div>
+            <div class="answer">Con l'identificazione di autoanticorpi presenti nel siero</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La diagnosi di dislipedemia si basa sulla misurazione di</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La diagnostica molecolare è utile nella</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La differenza critica o reference change value è il riferimento per valutare se</div>
+            <div class="answer">La differenza tra due misurazioni di un determinato analita sullo stesso paziente siano
+                statisticamente significative</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La diminuzione degli errori nella fase analitica sono stati raggiunti grazie</div>
+            <div class="answer">Maggiore standardizzazione delle procedure</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La famiglia delle proteine S100 è così chiamata per la loro solubilità in</div>
+            <div class="answer">Ammonio solfato al 100%</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La farmacogenomica</div>
+            <div class="answer">Permette di stabilire il miglior fatmaco per un determinato paziente</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La fase post-post-analitica è</div>
+            <div class="answer">Esterna al laboratorio di analisi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La fibrosi cistica è causata da una mutazione al gene</div>
+            <div class="answer">CFTR</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La fonte allergenicà è</div>
+            <div class="answer">La sostanza che contiene l'allergene</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La forma solubile delle proteina ST2 è in grado di legare</div>
+            <div class="answer">Molecole infiammatorie</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La fosfatasi alcalina appartiene alla famiglia delle</div>
+            <div class="answer">Idrolasi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La fosfatasi alcalina ha come sigla</div>
+            <div class="answer">ALP</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La fosfatasi alcalina presenta valori superiori alla norma in assenza di patologia
+                durante</div>
+            <div class="answer">Infanzia</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La galectina-3 è una lectina che lega la</div>
+            <div class="answer">La ?-galattosidasi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La gamma-glutamiltransferasi in condizioni normali presenta livelli più alti</div>
+            <div class="answer">Negli uomini</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La glicemia è più alta</div>
+            <div class="answer">Al mattino</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La glicemia è più alta nel</div>
+            <div class="answer">Siero>Plasma>Sangue intero</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La lattatodeidrogenasi è una proteina</div>
+            <div class="answer">Tetramerica formata dalla combinazione di due diverse catene polipeptidiche</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La legge di Lambert Beer esprime</div>
+            <div class="answer">La proporzionalità tra la concentrazione di una sostanza e l'assorbanza ad una
+                determinata lunghezza d'onda</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La lipoproteina Lipasi</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La lipoproteina lipasi e un enzima necessario nella determinazione di</div>
+            <div class="answer">Trigliceridi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La maggior parte dei soggetti affetti da lupus eritromatoso sono positivi a</div>
+            <div class="answer">ANA</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La maggior parte delle tecniche di biologia molecolare tendono a ricercare mutazioni
+                nella seuqnza del</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La maggior parte di azoto non proteico deriva</div>
+            <div class="answer">Urea</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La Malattia emolitica neonatale si ha quando</div>
+            <div class="answer">Una mamma Rh- porta in grembo un bimbo Rh+ alla seconda gravidanza</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La massima produzione di fibrina si deve al complesso</div>
+            <div class="answer">FIXa-FVIIIa</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La medicina di laboratorio è una disciplina che contribuisce a definire:</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La medicina di precisione prevede che:</div>
+            <div class="answer">I pazienti affetti dalla stessa patologia siano trattati con farmaci diversi a seconda
+                delle peculiarità biologiche</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La metrologia è la scienza che studia</div>
+            <div class="answer">Tutti i processi di misurazione</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La misurazione della beta 2-microglobulina fornisce indicazione sul funzionamento
+            </div>
+            <div class="answer">Renale</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La misurazione della galectina-3 (segnare la risposta corretta)</div>
+            <div class="answer">Varia notevolmente</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La mobilità elettroforetica relativa delle proteine varia in modo lineare in base a
+            </div>
+            <div class="answer">Logaritto decimale della massa molecolare relativa</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La Nested PCR permette</div>
+            <div class="answer">Aumentare la specificità della PCR</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La neuroipofisi rilascia</div>
+            <div class="answer">L'ormone antidiuretico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La PAGE può essere usata per separare le proteine in condizioni</div>
+            <div class="answer">Denaturanti e Native</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La PCR è una tecnica che serve per</div>
+            <div class="answer">Amplificare sequenze di DNA</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La peculiarità del metodo di Sanger è l'utilizzo di</div>
+            <div class="answer">Dideossinucleotidi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La percentuale di pazienti diabetici che presenta almeno un autoanticorpo è</div>
+            <div class="answer">95-95%</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La poliacrilamide per polimerizzare necessità di</div>
+            <div class="answer">Ammonio per solfato</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La presenza di acido ascorbico nelle urine</div>
+            <div class="answer">Può alterare le misurazioni di altri analiti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La presenza di nitriti nelle urine è un'indicazione di</div>
+            <div class="answer">Infezione batterica delle vie urinarie</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La presenza di schiuma biancastra nelle urine è dovuta a:</div>
+            <div class="answer">Eccesso di proteine</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La pressione oncotica è la pressione osmotica esercitata</div>
+            <div class="answer">Dalle proteine</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La prima fase dell'emostasi è</div>
+            <div class="answer">Reversibile</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La proteasi MMP-9</div>
+            <div class="answer">E' scarsamente espressa nel cervello e aumenta durante l'ictus</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La Proteina C Reattiva è una</div>
+            <div class="answer">Alfa globulina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La proteina di Tamm Horsfall è</div>
+            <div class="answer">L'uromodulina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La proteina GFAP è un marker</div>
+            <div class="answer">Di ictus cerebrale</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La proteina PARK7 è un marker di</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La proteina S100-beta è</div>
+            <div class="answer">Un marcatore precoce di ictus</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La proteina S100-beta è espressa</div>
+            <div class="answer">Dalle cellule gliali</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La protrombina è attivata dal fattore</div>
+            <div class="answer">FXa</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La qauntità di fosforo inorganico in un adulto sano ammonta a circa</div>
+            <div class="answer">2kg</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La quantità di antigene H è maggiore nei soggetti di gruppo</div>
+            <div class="answer">O</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La quasi totalità del cortsiolo viaggia nel sangue</div>
+            <div class="answer">Coniugato a delle proteine plasmatiche</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La raccolta delle urine delle 24 ore si effettua</div>
+            <div class="answer">Gettando le prime urine del mattino e raccogliendo fino alle prime urine del giorno
+                successivo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La Real Time PCR si basa sull'utilizzo di</div>
+            <div class="answer">Sostanze fluorescenti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La reazione con i dipstick non è generalmente influenzata</div>
+            <div class="answer">Da un pH acido</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La reazione di Jaffe serve per misurare i livelli di</div>
+            <div class="answer">Creatinina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La regione midollare della corteccia surrenale sintetizza e rilascia</div>
+            <div class="answer">Adrenalina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La ricerca di anticorpi contro la tireoperossidasi è indicata</div>
+            <div class="answer">Nella diagnosi dell'ipotiroidismo subclinico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La ricerca di marcatori ANA si esegue nella diagnosi di</div>
+            <div class="answer">Malattie autoimmuni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La risposta antinfiamatoria nelle allergie è mediata prevalentemente dai</div>
+            <div class="answer">Basofili</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La risposta antinfiamatoria nelle allergie è mediata prevalentemente dalle</div>
+            <div class="answer">IgE</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La saturazione dell'ossigeno sanguigno è compresa tra</div>
+            <div class="answer">95-99%</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La separazione libero-legato dovrebbe essere</div>
+            <div class="answer">Poco costosa</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La sigle BAP indica la</div>
+            <div class="answer">Fosfatasi alcalina ossea</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La sindrome di Cushing è una malattia rara causata da</div>
+            <div class="answer">Eccesso di cortisolo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La suscettibilità ad una patologia</div>
+            <div class="answer">Può essere trasmessa ai discendenti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La taratura è</div>
+            <div class="answer">è un'operazione meccanica, che predispone lo strumento a fornire i risultati della
+                misurazione</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La terapia con plasminogeno è consigliata</div>
+            <div class="answer">Nell'ictus ischemico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La tiramina è maggiormente presente</div>
+            <div class="answer">Nei formaggi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La transtiretina è un marcatore di</div>
+            <div class="answer">Danno epatico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La troponina C è espressa</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La turbidimetria e la nefelometria sono definiti</div>
+            <div class="answer">Metodi label-free</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La valutazione dell'emostasi è un esame</div>
+            <div class="answer">Indicato in soggetti con famigliarità per anomalie emorragiche</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La variabilità analitica è dovuta a</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La velocità di polimerizzazione della Taq polimerasi è di circa</div>
+            <div class="answer">100 basi/sec</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La via alternativa del complemento è attivata</div>
+            <div class="answer">Dai lipopolisaccaridi dei batteri</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La via classica del complemento è attivata</div>
+            <div class="answer">Dal complesso Ag-Ab</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La via estrinseca è</div>
+            <div class="answer">La via più rapida della coagulazione</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La visione dei corpuscoli amorfi, rispetto agli elementi cellulari, richiede un
+                ingrandimento</div>
+            <div class="answer">Minore</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">La vita media degli esosinofili è</div>
+            <div class="answer">12-14 giorni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le amilasi sono degli enzimi coinvolti nella digestione</div>
+            <div class="answer">Dei carboidrati</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le causa principale dell'anemia è</div>
+            <div class="answer">Carenza di ferro</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le cellule della parete vascolare</div>
+            <div class="answer">Favorisscono la contrazione vascolare</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le cellule parafollicolari tiroidee sintetizzano l'ormone</div>
+            <div class="answer">Calcitonina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le cellule più difficili da contare con i sistemi automatici sono:</div>
+            <div class="answer">I monociti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le cellule staminali della linea linfoidedanno origine a</div>
+            <div class="answer">Linfociti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le difficoltà di trovare biomarcatori affidabili per l'ictus è dovuta prevalentemente
+                al fatto che</div>
+            <div class="answer">Le proteine espresse da neuroni e glia richiedono tempi lunghi ad attraversare la
+                barriera emato-encefalica</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le emazie raggrinzite nelle urine derivano da</div>
+            <div class="answer">Glomerulo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le gammopatie monoclonali</div>
+            <div class="answer">Possono essere asintomatiche</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le gammopatie monoclonali sono dovute</div>
+            <div class="answer">Alla proliferazione anomala delle plasmacellule</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le intolleranze alimentari</div>
+            <div class="answer">Sono mediate dalle IgE</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le lipoproteine con il più alto contenuto di trigliceridi sono</div>
+            <div class="answer">I chilomicroni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le lipoproteine HDL sono</div>
+            <div class="answer">Più piccole delle VLDL</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le lunghezze d'onda utilizzata nelle misurazioni spettrofotometriche</div>
+            <div class="answer">Sono monocromatiche</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le metilarginine si possono ritrovare</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le molecole anforetiche hanno carica netta</div>
+            <div class="answer">Dipende dal pH</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le patologie per le quali è stato individuato il gene che causa la malattia sono circa
+            </div>
+            <div class="answer">1800</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le piastrine immature sono caratterizzate dalle presenza di</div>
+            <div class="answer">Elevate quantità di RNA ribosiomale</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le plasmacellule sono</div>
+            <div class="answer">Linfociti B</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le proteine si muovono in un gel SDS-PAGE con un velocità</div>
+            <div class="answer">Inversamente proporzionale alla loro massa</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le tecniche di sequenziamento Next-Generation</div>
+            <div class="answer">Sequenziano frammmenti più corti rispetto alla tecnica di Sanger</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le variabilità biologiche interindividuali variano</div>
+            <div class="answer">Tutte le risposte precedenti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Le variabilità della fase pre-analitica sono dovute</div>
+            <div class="answer">Alla variabilità legata la campione e al paziente</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Lo stress pre-prelievo può alterare i livelli</div>
+            <div class="answer">Delle catecolamine e del cortisolo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-N">Nei dipstik la misurazione della proteinuria è influenzata maggiormente
+                da</div>
+            <div class="answer">Transferrina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nei laboratori di analisi non vengono generalmente impiegati:</div>
+            <div class="answer">Nessuna delle risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nei metodi competitivi la quantità di segnale prodotto</div>
+            <div class="answer">Diminuirà all'aumentare della concentrazione dell'analita</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nei metodi in fase eterogenea è necessario separare</div>
+            <div class="answer">L'antigene marcato da quello non marcato</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nei metodi non competitivi il segnale</div>
+            <div class="answer">Aumenta all'aumentare della concentrazione dell'analita.</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nei soggetti allergici i livelli sierici delle IgE</div>
+            <div class="answer">Variano in base al tipo di antigene</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nei soggetti caucasici Rh- il gene RDH e</div>
+            <div class="answer">Deleto</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nel triplo-test per la diagnosi prenatale della sindrome di Down si misurano i livelli
+                di</div>
+            <div class="answer">alfa-fetoproteina, gonadotropina corionica, estriolo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nell'arco delle 24 generalmente si produce un volume di urine pari a</div>
+            <div class="answer">0,6-1,5 L</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nell'esame emocromocitometrico si trovano le seguenti sigle meno una, quale</div>
+            <div class="answer">TAS</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nell'esame emocromocitometrico tra gli indici eritrocitari non troviamo</div>
+            <div class="answer">PVC</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nell'ictus emorragico, la tossicità neuronale da emoglobina è un evento</div>
+            <div class="answer">Precoce</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nell'ictus ischemico, la disfunzionalità della barriera emato-encefalica è un evento
+            </div>
+            <div class="answer">Tardivo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nell'ictus subaracnoideo, l'emorragia è</div>
+            <div class="answer">Esterna al cervello</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nell'infarto del miocardio non aumenta nel siero</div>
+            <div class="answer">Emoglobina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nell'ipercolesterolemia famigliare si possono avere eventi cardiovascolari anche gravi
+                prima dei</div>
+            <div class="answer">50 anni</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nella CE su utilizza come supporto per la corsa elettroforetica</div>
+            <div class="answer">Silice</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nella citofluorimetria a flusso il forward scatter, rispetto alla fonte lumino, è
+                posizionato a</div>
+            <div class="answer">90°</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nella diagnosi del diabete chi dovrebbe sottoporsi a screening per la ricerca di
+                autoanticorpi?</div>
+            <div class="answer">Tutti i parenti di primo grado di pazienti affetti da questa patologia</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nella diagnosi prenatale delle malattie genetiche prima di ricercare le varianti
+                patogenetiche è necessario</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nella proteinuria renale glomerulare i livelli di proteine sono</div>
+            <div class="answer">Maggiori di 300 mg/die</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nella Real Time PCR si utilizza come intercalante</div>
+            <div class="answer">SYBR Green</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nella reazione della PCR sono necessari</div>
+            <div class="answer">Un primer forward e un primer reverse</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nella tecnica del Western blot l'incubazione con BSA serve per</div>
+            <div class="answer">Diminuire i siti aspecifici</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nella tecnica del western blot le proteine sono trasferite su un foglio di</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nella trombofilia la diagnosi di suscettibilità si ottiene tramite</div>
+            <div class="answer">La ricerca di mutazioni sul DNA</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nella trombosi</div>
+            <div class="answer">I fattori coagulanti sovrastano i fattori anticoagulanti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nelle analisi di laboratorio si utilizzano</div>
+            <div class="answer">Sia anticorpi policlonali che monoclonali</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nelle cellule del pancreas il traspoto del glucosio è regolato da</div>
+            <div class="answer">GLUT-2</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nelle malattie autoimmuni</div>
+            <div class="answer">Il sistema immunitario perde la capacità di riconoscere il self</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Nello schema brain-to-brain la richiesta di un esame diagnostico genera e termina:
+            </div>
+            <div class="answer">Nel cervello del clinico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Normalmente con il ROTEM si misura</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">NSE è un marcatore tumorale</div>
+            <div class="answer">Neuroblastoma</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-P">Per la misurazione dei livelli di TSH si usamo metodi</div>
+            <div class="answer">Immunometrici</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Per ridurre la glicolisi nel campione di sangue si aggiunge</div>
+            <div class="answer">Bromuro di sodio</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Possono dare maggior problemi gli antigeni</div>
+            <div class="answer">Dipende dalla fonte allergenica</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Prima della raccolta delle urine è consigliabile evitare di</div>
+            <div class="answer">Eseguire attività fisica</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Prima di un prelievo possibile prendere un caffè è</div>
+            <div class="answer">Non è consigliato</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-Q">Qual è il sistema più veloce nel contrastare i cambiamenti di pH
+                sanguigno</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Qual è l'ordine di immunogenicità degli antigeni Rh</div>
+            <div class="answer">D>c>E>C>e</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quale delle seguenti affermazioni non è vera</div>
+            <div class="answer">L'ematocrito è la percentuale del plasma del sangue intero</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quale delle seguenti affermazioni è corretta</div>
+            <div class="answer">Se l'anemia è definita microcitica l'MCV è patologicamente basso</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quale di queste affermazioni non è corretta</div>
+            <div class="answer">I linfociti T helper inducono la produzione piastrinica</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quale di queste affermazioni sull'ictus è corretta</div>
+            <div class="answer">L'ictus ischemico colpisce circa l'85% dei pazienti affetti da ictus</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quale di queste affermazioni è vera</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quale di queste allergie è più frequente nei bambini?</div>
+            <div class="answer">Uova</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quale di queste definizioni sul diabete non è corretta</div>
+            <div class="answer">Il diabete di tipo II è una malattia autoimmune</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quale di queste sigle non è un indice piastrinico</div>
+            <div class="answer">PRC</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quale di queste sostanze ha una funzione antiaggregante</div>
+            <div class="answer">Prostaciclina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quale di questi non è un marcatore tumorale</div>
+            <div class="answer">ACE</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quali cilindri sono formati esclusivamente dalla proteina di Tamm-Hosfall</div>
+            <div class="answer">Ialini</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quali delle seguenti affermazioni è corretta</div>
+            <div class="answer">Le intolleranze alimentari sono dovute ad un alterata risposta del sistema immunitario
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quali di queste affermazioni non è vera</div>
+            <div class="answer">La citofluorometria a flusso si basa sulla conduttanza elettrica</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quali di queste allergie è più frequente negli adulti</div>
+            <div class="answer">Pesca</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quali di queste cellule non è coinvolta nella risposta allergica</div>
+            <div class="answer">Nessuna delle risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quali di queste fasi appartiene all'emostasi</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quali di questi eventi non è caratteristico dell'ictus ischemico</div>
+            <div class="answer">Nessuna delle risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quali di questi fattori possono alterare il pH delle urine</div>
+            <div class="answer">Tutte le risposte</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quali di questi sono definiti leucociti mononucletati</div>
+            <div class="answer">Macrofagi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Quali fra questi meccanismi non è messo in atto dall'organismo per contrastare
+                l'anemia</div>
+            <div class="answer">Secrezione di eritropoietina</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-R">Red Cell Distribution Width nelle anemie risulta</div>
+            <div class="answer">Aumentato</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-S">SDS-PAGE permette la separazione delle proteine in base alla</div>
+            <div class="answer">Dimensione</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Si definisce come leucocituria la presenza di</div>
+            <div class="answer">10-20 leucociti a mL</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Si definisce un attacco ischemico transitorio se i sintomi permangono meno di</div>
+            <div class="answer">24 ore</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Si definisce un danno renale acuto quando si ha un aumento della creatinina plasmatica
+                nell'arco</div>
+            <div class="answer">Delle 24 ore</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Si ha trombosi quando</div>
+            <div class="answer">I fattori coagulanti sovrastano quelli anticoagulanti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Si ha un emorraggia quando</div>
+            <div class="answer">I fattori anticoagulanti sovrastano quelli coagulanti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Si può definire come variazione biologica la fluttuazione che un analità ha rispetto
+                al suo valore</div>
+            <div class="answer">Omeostatico</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Sono considerate patologie croniche renali quelle che hanno una durata superiore a
+            </div>
+            <div class="answer">12 settimane</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Sono considerati esami utili delle urine la misura del</div>
+            <div class="answer">Nitriti</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-T">Tipicamente la variabilità intraindividuale è</div>
+            <div class="answer">Inferiore alla variabilità interindividuale</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Tutte le misurazioni eseguite nei laboratori sono soggette a</div>
+            <div class="answer">Variabilità biologica e variabilità analitica</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question" id="letter-U">Un alto valore di colesterolo HDL è</div>
+            <div class="answer">Un fattore di protezione per ateroma</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Un aptene è una molecola che</div>
+            <div class="answer">E' riconosciuta da un anticorpo</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Un buon tracciante per immunoistochimica deve avere</div>
+            <div class="answer">Alta intensità di segnale per unità di massa</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Un campione viene definito emolizzato se</div>
+            <div class="answer">I livelli di emoglobina liberi sono superiori 0,30 mg/ml</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Un campione viene definito lipemico se presenta</div>
+            <div class="answer">Elevate concentrazioni di lipidi</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Un femtolitro corrisponde a</div>
+            <div class="answer">10-15 litri</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Un ibridoma si ottiene per fusione tra</div>
+            <div class="answer">Un linfocita B e una cellula di mieloma</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Un soggetto del gruppo AB è caratterizzato dalla presenza</div>
+            <div class="answer">Di antigeni A sulla superficie delle emazie</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Un soggetto del gruppo O è caratterizzato dalla presenza</div>
+            <div class="answer">Di anticorpi anti-AB nel siero</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Un soggetto O Rh+ puo' ricevere una donazione da un soggetto con gruppo sanguigno
+            </div>
+            <div class="answer">O Rh-</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Una deviazione standard elevata indica che</div>
+            <div class="answer">L'imprecisione è alta</div>
+        </div>
+
+        <div class="faq-item">
+            <div class="question">Una misurata accurata si ha</div>
+            <div class="answer">Con esattezza alta e precisione alta</div>
+        </div>
+
+
+        <!-- Continua con il resto delle domande -->
+        <!-- ... -->
+    </div>
+
+    <!-- Contenitore per entrambi i pulsanti -->
+    <div class="search-bar-container">
+        <div class="button-container">
+            <button id="button-a" onclick="window.location.href='aperte.html'">A</button>
+            <button id="search-toggle">&#128269;</button>
+        </div>
+        <div id="search-bar" class="hidden">
+            <input type="text" id="search-input" placeholder="Cerca una domanda...">
+        </div>
+    </div>
+
+    <script>
+        // Toggle visibilità della barra di ricerca
+        document.getElementById('search-toggle').addEventListener('click', function () {
+            const searchBar = document.getElementById('search-bar');
+            searchBar.classList.toggle('hidden');
+        });
+
+        // Funzionalità di ricerca
+        document.getElementById('search-input').addEventListener('input', function () {
+            const searchQuery = this.value.toLowerCase();
+            const faqItems = document.querySelectorAll('.faq-item');
+
+            faqItems.forEach(item => {
+                const question = item.querySelector('.question').innerText.toLowerCase();
+                const answer = item.querySelector('.answer').innerText.toLowerCase();
+
+                if (question.includes(searchQuery) || answer.includes(searchQuery)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+
+        // Assegna automaticamente gli ID alle domande (opzionale)
+        (function () {
+            const faqItems = document.querySelectorAll('.faq-item .question');
+            const lettersFound = {};
+
+            faqItems.forEach(question => {
+                const firstLetter = question.innerText.trim().charAt(0).toUpperCase();
+                if (!lettersFound[firstLetter]) {
+                    lettersFound[firstLetter] = true;
+                    question.id = 'letter-' + firstLetter;
+                }
+            });
+        })();
+    </script>
+
+</body>
+
+</html>

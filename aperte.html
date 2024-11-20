@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elenco Risposte</title>
+    <style>
+        /* ===========================
+       Variabili CSS
+    =========================== */
+        :root {
+            --primary-color: #0073e6;
+            /* Colore originale delle domande */
+            --secondary-color: #fff;
+            --background-color: #f4f4f4;
+            --text-color: #333;
+            --font-family: Arial, sans-serif;
+            --max-width: 800px;
+            --border-radius: 5px;
+            --padding: 1rem;
+            --font-size-base: 1rem;
+            --line-height-base: 1.5;
+
+            /* Nuove variabili per migliorare la leggibilità */
+            --question-color: #003366;
+            /* Nuovo colore per le domande */
+            --answer-font-weight: bold;
+            /* Aumenta lo spessore del carattere delle risposte */
+            --answer-font-size: 1.2rem;
+            /* Aumenta la dimensione del font delle risposte */
+            --question-font-size: 1.2rem;
+            /* Aumenta la dimensione del font delle domande */
+        }
+
+        /* ===========================
+       Stili Globali
+    =========================== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            margin: 0;
+            padding-top: 70px;
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-base);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            font-size: 1.8rem;
+            margin: 0 0 1rem 0;
+            font-weight: bold;
+        }
+
+        /* ===========================
+       Barra di Navigazione Alfabetica
+    =========================== */
+        .alphabet-nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: var(--primary-color);
+            padding: 0.5rem;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .alphabet-nav a {
+            color: var(--secondary-color);
+            margin: 0 0.5rem;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .alphabet-nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===========================
+       Barra di Ricerca a Scomparsa
+    =========================== */
+        .search-bar-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        #search-toggle {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 0.5rem;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #search-bar {
+            margin-top: 0.5rem;
+        }
+
+        #search-bar input[type="text"] {
+            width: 200px;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* ===========================
+       Pulsante per tornare alla Index
+    =========================== */
+        #back-button {
+            position: fixed;
+            bottom: 80px;
+            /* Posizionato sopra il pulsante della lente */
+            right: 20px;
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 0.5rem;
+            font-size: 1.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            text-align: center;
+            line-height: 1;
+        }
+
+        /* ===========================
+       Contenitore Risposte
+    =========================== */
+        .answer-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        /* ===========================
+       Risposte
+    =========================== */
+        .answer-item {
+            padding: var(--padding);
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+            background-color: var(--secondary-color);
+            margin-bottom: 1rem;
+            font-weight: var(--answer-font-weight);
+            font-size: var(--answer-font-size);
+            color: var(--text-color);
+        }
+
+        /* ===========================
+       Responsive Design
+    =========================== */
+        @media (max-width: 768px) {
+            :root {
+                --font-size-base: 1.2rem;
+                --line-height-base: 1.6;
+                --padding: 1.5rem;
+                --answer-font-size: 1.4rem;
+                --question-font-size: 1.4rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .search-bar-container input[type="text"] {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            :root {
+                --font-size-base: 1.4rem;
+                --line-height-base: 1.7;
+                --padding: 1.5rem;
+                --answer-font-size: 1.6rem;
+                --question-font-size: 1.6rem;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .search-bar-container input[type="text"] {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Barra di Navigazione Alfabetica -->
+    <div class="alphabet-nav">
+        <a href="#letter-A">A</a>
+        <a href="#letter-B">B</a>
+        <a href="#letter-C">C</a>
+        <a href="#letter-D">D</a>
+        <a href="#letter-E">E</a>
+        <a href="#letter-F">F</a>
+        <a href="#letter-G">G</a>
+        <a href="#letter-H">H</a>
+        <a href="#letter-I">I</a>
+        <a href="#letter-J">J</a>
+        <a href="#letter-K">K</a>
+        <a href="#letter-L">L</a>
+        <a href="#letter-M">M</a>
+        <a href="#letter-N">N</a>
+        <a href="#letter-O">O</a>
+        <a href="#letter-P">P</a>
+        <a href="#letter-Q">Q</a>
+        <a href="#letter-R">R</a>
+        <a href="#letter-S">S</a>
+        <a href="#letter-T">T</a>
+        <a href="#letter-U">U</a>
+        <a href="#letter-V">V</a>
+        <a href="#letter-W">W</a>
+        <a href="#letter-X">X</a>
+        <a href="#letter-Y">Y</a>
+        <a href="#letter-Z">Z</a>
+    </div>
+
+    <h1>Elenco Risposte</h1>
+
+    <div class="answer-container" id="answer-container">
+        <div class="answer-item" id="letter-A">
+            Allergie: Le allergie sono una reazione del sistema immunitario a una sostanza normalmente innocua (come
+            cibo, polline o polvere). Il sistema immunitario “confonde” la sostanza con una minaccia e produce anticorpi
+            IgE contro di essa. Quando una persona allergica entra in contatto con l’allergene (la sostanza che provoca
+            l’allergia), il corpo rilascia istamina e altre sostanze chimiche per difendersi, causando i sintomi tipici
+            dell’allergia. I sintomi di un’allergia possono essere immediati e variare da lievi a gravi. Possono
+            includere: Prurito o eruzione cutanea (orticaria), Difficoltà respiratorie o respiro sibilante, Gonfiore
+            (specialmente del viso, delle labbra, della lingua), Nausea, vomito o diarrea, Anaphylassi (reazione grave e
+            potenzialmente letale con difficoltà respiratorie, abbassamento della pressione sanguigna e shock).
+            Intolleranze: Le intolleranze non coinvolgono il sistema immunitario. Sono generalmente dovute a problemi
+            digestivi o a difficoltà nel metabolizzare una determinata sostanza. Per esempio, una intolleranza al
+            lattosio si verifica quando il corpo non è in grado di digerire il lattosio (lo zucchero del latte) a causa
+            della carenza dell’enzima lattasi. I sintomi possono includere: Gonfiore addominale, Diarrea, Nausea, Crampi
+            addominali, Flatulenza. I sintomi sono generalmente più localizzati e meno gravi rispetto a quelli di
+            un’allergia, ma possono essere fastidiosi.
+        </div>
+
+        <div class="answer-item">
+            Anticorpi nelle reazioni immunochimiche: sono fondamentali nelle reazioni immunochimiche per il loro ruolo
+            nel riconoscere e legarsi specificamente agli antigeni. Possono essere policlonali o monoclonali e vengono
+            utilizzati per rilevare e quantificare la presenza di un antigene.
+        </div>
+
+        <div class="answer-item" id="letter-C">
+            Caratteristiche dei metodi competitivi e non competitivi Metodi Competitivi (definiti difetto di anticorpo):
+            - Si basano sulla competizione tra un antigene marcato (Ag*) e un antigene non marcato (Ag) per legarsi agli
+            anticorpi (Ab). Possono riconoscere qualsiasi antigene indipendentemente dalle dimensioni. Il segnale
+            diminuisce all’aumentare della concentrazione dell’analita. Metodi Non Competitivi (definiti a sandiwich): -
+            Non c’è competizione tra antigene marcato e non marcato. Sono più specifici e più sensibili rispetto ai
+            metodi competitivi. Il segnale aumenta all’aumentare della concentrazione dell’analita.
+        </div>
+
+        <div class="answer-item" id="letter-E">
+            Ematuria ed emoglobinuria sono due condizioni che implicano patologie renali per la presenza di sangue nelle
+            urine. L’ematuria è la presenza di globuli rossi (eritrociti) nelle urine. Può essere visibile (cambio
+            colore urine) o rilevabile solo tramite esame microscopico. L’emoglobinuria è la presenza di emoglobina
+            libera nelle urine, che si verifica quando i globuli rossi vengono distrutti nel circolo sanguigno (emolisi)
+            e l’emoglobina viene rilasciata nel flusso sanguigno, successivamente filtrata dai reni e eliminata nelle
+            urine.
+        </div>
+
+        <div class="answer-item">
+            Esistono due principali metodi per effettuare la conta cellulare: metodi manuali e metodi automatici. Quelli
+            automatici sono più veloci e precisi.
+        </div>
+
+        <div class="answer-item" id="letter-G">
+            Gli indici eritrocitari sono parametri misurati nei test del sangue per valutare la qualità e la quantità
+            degli eritrociti (globuli rossi). Questi indici sono utili per diagnosticare diverse condizioni
+            ematologiche, come anemia, talassemia e altre malattie sanguigne. I principali indici eritrocitari sono:
+            MCV, RDW. Gli indici piastrinici sono parametri che vengono misurati nell’ambito di un emocromo per valutare
+            la quantità, la qualità e la distribuzione delle piastrine nel sangue. Le piastrine sono cellule del sangue
+            coinvolte nella coagulazione e nella prevenzione delle emorragie. I principali indici piastrinici sono: MPV,
+            PDW.
+        </div>
+
+        <div class="answer-item">
+            Gli isoenzimi sono forme diverse di un enzima che catalizzano la stessa reazione chimica, ma che presentano
+            differenze nella struttura molecolare. Esempio la lattato deidrogenasi o la creatinachinasi.
+        </div>
+
+        <div class="answer-item" id="letter-I">
+            I cilindri renali sono agglomerati di elementi proteici che, se presenti, e il tipo di cilindro (ialini,
+            eritrocitari, leucocitari, granulari, cerosi, epiteliali) aiutano a identificare la causa del danno renale e
+            a determinare la gravità della condizione.
+        </div>
+
+        <div class="answer-item">
+            I granulociti sono un tipo di globuli bianchi (leucociti) che svolgono un ruolo fondamentale nel sistema
+            immunitario. Prendono il nome dai granuli presenti nel loro citoplasma e si distinguono in 3 tipi:
+            neutrofili, eosinofili e basofili.
+        </div>
+
+        <div class="answer-item">
+            I linfociti sono un tipo di globuli bianchi (leucociti) che svolgono un ruolo cruciale nel sistema
+            immunitario, in particolare nella risposta immunitaria adattativa. Essi si suddividono in tre principali
+            categorie, ciascuna con funzioni specifiche: linfociti T, linfociti B e linfociti NK (Natural Killer).
+        </div>
+
+        <div class="answer-item">
+            I marcatori di danno cardiaco sono sostanze chimiche presenti nel sangue che aumentano in risposta a danni
+            al cuore: TROPONINA, CREATINA CHINASI, MIOGLOBINA, LATTATO DEIDROGENASI.
+        </div>
+
+        <div class="answer-item">
+            I marcatori di danno renale sono sostanze nel sangue o nelle urine che possono essere utilizzate per
+            rilevare, monitorare o quantificare il danno renale. Tra questi, urea e cistatina C. L’urea è un prodotto
+            finale del metabolismo delle proteine, si forma nel fegato e viene eliminata dai reni. Rispetto all’urea, la
+            cistatina C offre una visione più chiara della funzionalità renale.
+        </div>
+
+        <div class="answer-item">
+            I marcatori di ictus sono indicatori biologici che possono essere rilevati nel sangue e che aiutano a
+            diagnosticare e monitorare un ictus (ischemico o emorragico): Proteina S100B, PROTEINA PARK7, FOSFOLIPASI
+            A2, ADMA.
+        </div>
+
+        <div class="answer-item">
+            I marcatori oncofetali sono proteine o altre molecole che vengono prodotte principalmente durante lo
+            sviluppo fetale ma che possono essere riattivate in alcune patologie tumorali.
+        </div>
+
+        <div class="answer-item">
+            I metodi in fase omogenea e eterogenea sono utilizzati per determinare la concentrazione di analiti (come
+            antigeni o anticorpi) in un campione attraverso reazioni di legame Ag-Ab. Metodi in Fase Omogenea: Non
+            richiedono la separazione fisica dei complessi liberi e legati; si usano traccianti che modificano il
+            segnale in base alla formazione del complesso Ab-Ag. Metodi in Fase Eterogenea: La separazione dei complessi
+            liberi da quelli legati è fondamentale.
+        </div>
+
+        <div class="answer-item">
+            I principali marcatori di danno epatico sono enzimi e altre molecole che, quando presenti nel sangue a
+            livelli elevati, indicano che le cellule del fegato sono danneggiate o in sofferenza. Esempio: ALT, AST,
+            ALP, BIRILUBIMA, ALBUMINA e PROTROMBINA.
+        </div>
+
+        <div class="answer-item">
+            I test diagnostici della coagulazione forniscono informazioni dettagliate sul funzionamento del sistema di
+            coagulazione del sangue. E sono il TEMPO DI PROTOMBINA, TEMPO DI TROMBOPLASTINA, DOSAGGIO DEL FIBRINOGENO.
+        </div>
+
+        <div class="answer-item">
+            Il CEA è un marcatore tumorale, è prodotto in maggiori quantità da alcune cellule tumorali e da tessuti
+            embrionali durante lo sviluppo fetale, da cui prende il nome.
+        </div>
+
+        <div class="answer-item">
+            Il cortisolo è un ormone steroideo prodotto dalle ghiandole surrenali (sopra i reni) ed è essenziale per la
+            regolazione di vari processi fisiologici, come la risposta allo stress. Cortisolo, aldosterone, adrenalina e
+            noradrenalina.
+        </div>
+
+        <div class="answer-item">
+            Il diabete di tipo 1 o diabete giovanile, solitamente viene diagnosticato in bambini e giovani adulti, ma
+            può svilupparsi a qualsiasi età. Le persone con diabete di tipo 1: non possono produrre insulina da sole,
+            devono fare iniezioni quotidiane di insulina per regolare i livelli di zucchero nel sangue. I sintomi
+            includono sete eccessiva, minzione frequente, stanchezza e perdita di peso. Il diabete di tipo 2 è il più
+            comune ed è una condizione in cui il corpo ha resistenza all’insulina. Il corpo non riesce a controllare i
+            livelli di zucchero nel sangue. È influenzato da fattori come stile di vita poco salutare (dieta ricca di
+            zuccheri e grassi, poca attività fisica) e genetica. Di solito si sviluppa negli adulti (spesso dopo i 40
+            anni), ma può comparire anche nei giovani, specialmente se ci sono fattori di rischio come il sovrappeso.
+        </div>
+
+        <div class="answer-item">
+            Il dipstick (striscia reattiva) è uno strumento diagnostico semplice e rapido utilizzato principalmente per
+            l’analisi delle urine. Questo test consente di ottenere informazioni utili sullo stato del sistema renale e
+            urinario, individuando anomalie che potrebbero suggerire malattie renali, infezioni delle vie urinarie
+            (IVU), disidratazione o altre condizioni cliniche. È un test rapido, semplice ed economico che non richiede
+            attrezzature complesse. Permette di analizzare le urine senza bisogno di prelievi invasivi.
+        </div>
+
+        <div class="answer-item">
+            Il metodo di Trinder è una tecnica colorimetrica utile per misurare il colesterolo nel sangue, basata su una
+            reazione enzimatica che produce un composto colorato misurabile spettrofotometricamente. Si basa sulla
+            produzione di H2O2 che si colorerà.
+        </div>
+
+        <div class="answer-item">
+            Il pHmetro e l’urinometro sono strumenti utilizzati nell’analisi delle urine per misurare rispettivamente il
+            pH e la densità urinaria (gravità specifica). Il pHmetro è uno strumento utilizzato per misurare il pH delle
+            urine, il valore normale è tra 4,5-7,5 sotto acide (disidratazione), sopra basiche (diete ricche di frutta e
+            verdura, infezioni urinarie da batteri che producono ammoniaca o alcalosi metabolica). L’urinometro è uno
+            strumento utilizzato per misurare la densità urinaria, che è anche chiamata gravità specifica, indica la
+            capacità dei reni di concentrare o diluire l’urina. La densità urinaria è il rapporto tra la densità
+            dell’urina e quella dell’acqua. Il valore normale è 1007-1035 g/L.
+        </div>
+
+        <div class="answer-item">
+            Il prelievo di sangue è fondamentale per la diagnosi, il monitoraggio di malattie e per seguire l’andamento
+            di terapie o trattamenti. Può essere venoso, capillare o arterioso. Il sangue intero, il plasma e il siero:
+            SANGUE INTERO= contiene plasma, più la frazione corpuscolata che sono globuli rossi (eritrociti), che
+            trasportano ossigeno e anidride carbonica, globuli bianchi (leucociti), che sono coinvolti nella difesa
+            immunitaria, piastrine (trombociti), che partecipano alla coagulazione del sangue. PLASMA= è la parte del
+            sangue intero che rimane dopo aver rimosso la frazione corpuscolata (globuli rossi, globuli bianchi e
+            piastrine). Il plasma viene ottenuto centrifugando il sangue intero con anticoagulanti. SIERO= è simile al
+            plasma ma senza i fattori della coagulazione.
+        </div>
+
+        <div class="answer-item">
+            Il sistema sanguigno ABO è uno dei principali sistemi di classificazione del sangue umano, studia gli
+            antigeni presenti sui globuli rossi e definisce quindi i gruppi sanguigni: A (antigene A), B (antigene B),
+            AB (antigene A e B) e 0 (nessun antigene A e B). 0 più diffuso, AB meno diffuso. Per evitare reazioni
+            immunitarie gravi durante le trasfusioni sanguigne, è essenziale che il sangue donato sia compatibile con
+            quello del ricevente. I globuli rossi del donatore devono avere gli stessi antigeni del ricevente. Il gruppo
+            0 produce anticorpi contro entrambi gli antigeni (anti-A e anti-B). Questo li rende donatori universali,
+            poiché il sangue di gruppo 0 può essere donato a tutti gli altri gruppi.
+        </div>
+
+        <div class="answer-item">
+            Il sistema sanguigno Rh+ si riferisce alla presenza dell’antigene Rh sulla membrana dei globuli rossi di un
+            individuo. Questo sistema è separato dal sistema ABO (che classifica il sangue in A, B, AB e O) e si basa
+            sull’antigene Rh, che può essere presente o assente sui globuli rossi. L’antigene D è il più importante.
+        </div>
+
+        <div class="answer-item">
+            Il trasporto inverso del colesterolo è un processo biologico che consente di rimuovere il colesterolo in
+            eccesso dai tessuti periferici (come le arterie, i muscoli e il fegato) e di trasportarlo verso il fegato,
+            dove può essere eliminato dal corpo attraverso la bile o riutilizzato. Questo processo è mediato dalle
+            lipoproteine ad alta densità (HDL), che sono spesso definite come “colesterolo buono” proprio per il loro
+            ruolo protettivo nella salute cardiovascolare.
+        </div>
+
+        <div class="answer-item">
+            Il volume delle urine in 24 ore è 0,6 e 1,5 litri. L’esame chimico-fisico delle urine è un test che valuta
+            le caratteristiche fisiche, chimiche e microscopiche delle urine per diagnosticare diverse condizioni
+            patologiche e monitorare la funzionalità renale.
+        </div>
+
+        <div class="answer-item">
+            Il Western Blot è una tecnica usata per studiare le proteine in modo dettagliato.
+        </div>
+
+        <div class="answer-item">
+            Ipotirodismo e ipertiroidismo sono due condizioni patologiche che riguardano la tiroide, una ghiandola
+            endocrina che regola numerosi processi metabolici nel corpo attraverso la produzione degli ormoni tiroxina
+            (T4) e triiodotironina (T3). Ipotirodismo causa un rallentamento del metabolismo. Il rilascio degli ormoni
+            tiroidei (T3 e T4) è regolato da un sistema complesso che coinvolge l’interazione tra ipotalamo, ipofisi e
+            tiroide. Questo sistema di controllo è noto come asse ipotalamo-ipofisi-tiroide (HPT), ed è un esempio di
+            feedback negativo.
+        </div>
+
+        <div class="answer-item" id="letter-L">
+            La celiachia è una malattia autoimmune che è scatenata da un fattore esterno, cioè il consumo di glutine
+            (composto proteico contenuto nel grano). Comprende l’1% della popolazione. Distrugge i villi intestinali
+            (che permettono l’assorbimento intestinale dei nutrienti, vitamine, minerali, liquidi) quindi l’organismo
+            non assorbe bene i nutrienti del cibo.
+        </div>
+
+        <div class="answer-item">
+            La creatinachinasi è un enzima dimerico (che presenta 3 isoenzimi diversi) presente in vari tessuti del
+            corpo, tra cui muscoli scheletrici, cuore e cervello. La sua funzione principale è quella di formare ATP, un
+            processo che fornisce energia alle cellule, specialmente quelle muscolari, durante attività fisiche intense.
+        </div>
+
+        <div class="answer-item">
+            La creatinina è prodotta principalmente nel fegato a partire dalla creatina, che è immagazzinata nei
+            muscoli. Una volta prodotta, la creatinina entra nel flusso sanguigno e viene trasportata ai reni. I reni
+            filtrano la creatinina dal sangue nei glomeruli (i minuscoli filtri del rene) e la trasportano attraverso i
+            tubuli renali, dove viene infine escreta nelle urine. I livelli di creatinina nel sangue sono spesso
+            utilizzati come indice della funzione renale. Un aumento dei livelli di creatinina nel sangue può indicare
+            che i reni non stanno funzionando correttamente, poiché non riescono a filtrarla ed eliminarla
+            efficacemente. Tuttavia, i livelli di creatinina nel sangue possono essere influenzati anche da altri
+            fattori, come: Massa muscolare: Le persone con una maggiore massa muscolare (ad esempio, gli uomini o gli
+            atleti) tendono a produrre più creatinina rispetto alle persone con meno muscoli. Alimentazione: Una dieta
+            ricca di carne può aumentare temporaneamente i livelli di creatinina.
+        </div>
+
+        <div class="answer-item">
+            La diagnosi prenatale è l’insieme delle tecniche e dei test utilizzati per monitorare la salute del feto
+            durante la gravidanza e per identificare eventuali anomalie genetiche, cromosomiche o malformazioni. Questi
+            test possono essere non invasivi o invasivi e possono essere effettuati in diversi momenti della gravidanza.
+        </div>
+
+        <div class="answer-item">
+            La fibrosi cistica (FC) è una malattia genetica grave che colpisce principalmente i polmoni e l’apparato
+            digerente, causando una produzione di muco denso e viscoso che ostruisce le vie respiratorie e gli organi
+            digestivi. La condizione è causata da un difetto in un gene chiamato CFTR (Cystic Fibrosis Transmembrane
+            Conductance Regulator), che regola il passaggio di sali (principalmente cloruro di sodio) attraverso le
+            membrane cellulari. La mutazione di questo gene altera la normale produzione e composizione del muco, che
+            diventa più denso e vischioso.
+        </div>
+
+        <div class="answer-item">
+            La formazione del tappo piastrinico è un processo rapido ed essenziale per fermare il sanguinamento. Esso
+            dipende da una serie di eventi cellulari e molecolari che coinvolgono l’adesione, l’attivazione e
+            l’aggregazione delle piastrine, con l’ausilio di vari fattori come il collagene, il fibrinogeno e il von
+            Willebrand factor. Il tappo piastrinico agisce come un sigillo temporaneo che, insieme alla coagulazione,
+            contribuisce a ristabilire l’integrità del vaso danneggiato. Fasi: vasocostrizione (che aiuta a ridurre la
+            perdita di sangue), adesione piastrina (con collagene), attivazione delle piastrine, aggregazione delle
+            piastrine, formazione del tappo piastrinico (sigilla temporaneamente la ferita, limitando la perdita di
+            sangue).
+        </div>
+
+        <div class="answer-item">
+            La misurazione dei corpi chetonici è un test utilizzato per rilevare la presenza di chetoni nel sangue o
+            nelle urine. I chetoni sono sostanze chimiche prodotte dal corpo quando non ha abbastanza insulina per
+            utilizzare il glucosio come fonte di energia, e inizia a bruciare i grassi per produrre energia. La
+            misurazione dei chetoni è particolarmente importante per le persone con diabete, ma può essere utile anche
+            in altre condizioni. I principali corpi chetonici: Acetoacetato: La forma principale di chetone prodotta dal
+            corpo. Acido beta-idrossibutirrico (BHB): Un altro chetone prodotto in grandi quantità. Acetone: Un chetone
+            volatile che viene escreto principalmente attraverso la respirazione.
+        </div>
+
+        <div class="answer-item">
+            La misurazione della glicemia (livelli di zucchero nel sangue) può essere influenzata da diversi fattori.
+            Alcuni di questi possono portare a valori inaccurati o distorsioni dei risultati: Cibi e bevande=
+            carboidrati o zuccheri possono alterare. Medicinali. Esercizio fisico. Condizioni fisiologiche. Età.
+        </div>
+
+        <div class="answer-item">
+            La proteina C-reattiva è una proteina prodotta dal fegato in risposta a processi infiammatori nel corpo. È
+            considerata un indicatore biologico importante per rilevare e monitorare l’infiammazione e le infezioni,
+            poiché i suoi livelli aumentano quando c’è un’infiammazione acuta o cronica.
+        </div>
+
+        <div class="answer-item">
+            La proteinuria è la presenza di proteine nelle urine e ad alti livelli può essere un segno di danno renale.
+            Può essere di 3 tipi: pre-renale, renale e post-renale.
+        </div>
+
+        <div class="answer-item">
+            La tromboelastografia è uno strumento diagnostico avanzato e utile che fornisce una valutazione completa
+            della coagulazione del sangue in tempo reale. È particolarmente utile nelle situazioni in cui è necessario
+            monitorare e gestire in modo preciso e personalizzato la coagulazione, come nelle chirurgie complesse, nei
+            traumi o nei pazienti critici.
+        </div>
+
+        <div class="answer-item">
+            La VARIABILITÀ BIOLOGICA è la differenza nelle misurazioni di parametri biologici tra individui diversi
+            (variabilità interindividuale) e all’interno dello stesso individuo nel tempo (variabilità
+            intraindividuale). Questo può dipendere da fattori come l’età, il sesso, i ritmi biologici (circadiani,
+            mensili, stagionali) e altre condizioni fisiologiche.
+        </div>
+
+        <div class="answer-item">
+            La via esogena dei lipidi è il processo attraverso il quale i lipidi (principalmente trigliceridi,
+            colesterolo e fosfolipidi) vengono assorbiti dalla dieta e trasportati nel corpo per essere utilizzati come
+            fonte di energia o immagazzinati. Questo processo coinvolge il sistema digestivo, il sistema linfatico e il
+            flusso sanguigno. La via esogena si distingue dalla via endogena, che riguarda la sintesi di lipidi
+            all’interno del corpo da parte del fegato.
+        </div>
+
+        <div class="answer-item">
+            Le dislipidemie sono condizioni in cui i livelli di lipidi nel sangue sono alterati, spesso con un aumento
+            di colesterolo LDL e/o trigliceridi. Esse aumentano il rischio di malattie cardiovascolari e possono essere
+            trattate con modifiche dello stile di vita e farmaci. La diagnosi precoce e la gestione adeguata sono
+            fondamentali per ridurre i rischi associati. Esempi: ipercolesterolemia, ipocolesterolemia,
+            ipertrigliceridemia, ecc.
+        </div>
+
+        <div class="answer-item">
+            Le gammopatie monoclonali sono un gruppo di malattie dovute alla proliferazione anomala delle plasmacellule
+            e possono essere asintomatiche.
+        </div>
+
+        <div class="answer-item">
+            Le HDL sono conosciute come “colesterolo buono”. Esse sono lipoproteine che trasportano il colesterolo in
+            eccesso dai tessuti e dalle arterie al fegato, dove può essere eliminato o riutilizzato. Le LDL sono
+            conosciute come “colesterolo cattivo”. Esse trasportano il colesterolo dal fegato verso le cellule e i
+            tessuti, dove viene utilizzato per la costruzione delle membrane cellulari o per altre funzioni. Tuttavia,
+            se il livello di LDL nel sangue è troppo alto, il colesterolo può accumularsi nelle pareti delle arterie,
+            formando placche che aumentano il rischio di malattie cardiovascolari, come infarto e ictus.
+        </div>
+
+        <div class="answer-item">
+            Le malattie autoimmuni sono un gruppo di patologie in cui il sistema immunitario, che normalmente protegge
+            l’organismo da infezioni e altre minacce, attacca erroneamente le cellule e i tessuti sani del proprio
+            corpo. Questo errore nel riconoscimento del “sé” porta alla distruzione o al danneggiamento di organi e
+            tessuti. Esistono 80 tipi di malattie autoimmuni: artrite reumatoide, sclerosi multipla, celiachia. Gli
+            effetti possono essere: distruzione totale o parziale degli organi o dei tessuti colpiti, crescita anomala
+            degli organi o dei tessuti, alterazione funzionale degli organi o dei tessuti.
+        </div>
+
+        <div class="answer-item">
+            Le patologie renali possono colpire i reni in vari modi, influenzando la loro capacità di filtrare il
+            sangue, regolare l’equilibrio idrico ed elettrolitico, e produrre ormoni importanti. Queste patologie
+            possono essere acute o croniche.
+        </div>
+
+        <div class="answer-item">
+            LEGGE LAMBERT-BEER Esprime la proporzionalità tra la concentrazione di una sostanza e l’assorbanza ad una
+            determinata lunghezza d’onda.
+        </div>
+
+        <div class="answer-item">
+            L’alfa-1 antitripsina è una proteina plasmatica prodotta principalmente dal fegato. La sua funzione
+            principale è quella di proteggere i polmoni.
+        </div>
+
+        <div class="answer-item">
+            L’anemia è una condizione patologica in cui la quantità di globuli rossi o emoglobina nel sangue è inferiore
+            alla norma. Poiché l’emoglobina è fondamentale per il trasporto dell’ossigeno, la carenza di emoglobina
+            riduce la capacità del sangue di trasportare ossigeno ai vari organi e tessuti, portando a sintomi come
+            stanchezza, debolezza, pallore e respiro affannoso. Una delle cause più comuni di anemia è la carenza di
+            ferro. Si verifica quando il corpo non ha abbastanza ferro per produrre emoglobina. Le cause principali
+            includono una dieta povera di ferro, perdita di sangue (ad esempio, mestruazioni abbondanti o sanguinamento
+            gastrointestinale) e difficoltà nell’assorbimento del ferro.
+        </div>
+
+        <div class="answer-item">
+            L’aptoglobina è una proteina plasmatica prodotta principalmente dal fegato, che ha una funzione importante
+            nel legarsi all’emoglobina libera nel sangue. La sua principale funzione è quella di legare l’emoglobina
+            rilasciata dai globuli rossi distrutti, prevenendo così i danni ai reni e altri organi e facilitando il
+            recupero del ferro. Quando i globuli rossi si rompono (emolisi), l’aptoglobina si lega all’emoglobina libera
+            e forma un complesso che viene poi rimosso dal sangue, principalmente dal fegato.
+        </div>
+
+        <div class="answer-item">
+            L’elettroforesi 2D è una tecnica usata per studiare le proteine in modo dettagliato e separa le proteine in
+            due dimensioni (per carica e per dimensione).
+        </div>
+
+        <div class="answer-item">
+            L’elettroforesi capillare è una tecnica di separazione delle molecole che invece di utilizzare un gel, usa
+            un capillare, che è un tubicino molto sottile, attraverso il quale passa il campione. È un metodo rapido,
+            preciso e può essere utilizzato per proteine, aminoacidi, vitamine, zuccheri, virus ecc.
+        </div>
+
+        <div class="answer-item">
+            L’elettroforesi SDS-PAGE separa le proteine in base alla loro dimensione dopo che sono state trattate con
+            SDS, che le denatura e le rende tutte cariche negativamente. I PAGE sono gel di acrilamide.
+        </div>
+
+        <div class="answer-item">
+            L’emofilia A e l’emofilia B sono malattie genetiche rare che influenzano il sistema di coagulazione del
+            sangue, causando sanguinamenti prolungati o difficoltà nella formazione di coaguli. Entrambe sono dovute a
+            difetti in specifici fattori di coagulazione, che sono proteine essenziali per fermare il sanguinamento.
+            Queste malattie sono ereditarie, legate al cromosoma X, il che significa che colpiscono prevalentemente i
+            maschi, mentre le femmine sono per lo più portatrici asintomatiche.
+        </div>
+
+        <div class="answer-item">
+            L’errore è la differenza tra il valore vero e il valore misurato della grandezza in esame. Può essere
+            CASUALE, SISTEMATICO o GROSSOLANO. CASUALI= imprevedibili e parzialmente eliminabili. SISTEMATICI= costanti,
+            prevedibili e si possono risolvere. GROSSOLANI= facili e risolvibili.
+        </div>
+
+        <div class="answer-item" id="letter-O">
+            Ormoni rilasciati dall’adenoipofisi: Ormone della crescita (GH), prolattina, ormone tireostimolante, ormone
+            follicolo stimolante, ormone LH, ossitocina, antidiuretico.
+        </div>
+
+        <div class="answer-item" id="letter-P">
+            PCR è una tecnica che permette di amplificare milioni di volte una sequenza nota di DNA in vitro.
+        </div>
+
+        <div class="answer-item" id="letter-T">
+            Traccianti delle reazioni immunochimiche: sono come marcatori coniugati agli anticorpi o agli antigeni per
+            rendere visibile l’interazione antigene-anticorpo. Questi traccianti possono essere radioattivi, enzimatici,
+            fluorescenti o chemiluminescenti, e vengono scelti per la loro capacità di emettere un segnale facilmente
+            rilevabile senza interferire con il legame antigene-anticorpo.
+        </div>
+
+        <div class="answer-item" id="letter-U">
+            Una reazione di ipersensibilità (o reazione allergica) è una risposta eccessiva del sistema immunitario a
+            una sostanza normalmente innocua, chiamata allergene. Abbiamo: Fase di sensibilizzazione con la prima
+            esposizione, La reazione tutte le volte successive.
+        </div>
+
+
+        <!-- Aggiungi qui le altre risposte -->
+    </div>
+
+    <!-- Pulsante per tornare alla Index -->
+    <button id="back-button">C</button>
+
+    <!-- Barra di Ricerca a Scomparsa nell'Angolo in Basso a Destra -->
+    <div class="search-bar-container">
+        <button id="search-toggle">&#128269;</button>
+        <div id="search-bar" class="hidden">
+            <input type="text" id="search-input" placeholder="Cerca una risposta...">
+        </div>
+    </div>
+
+    <script>
+        // Toggle visibilità della barra di ricerca
+        document.getElementById('search-toggle').addEventListener('click', function () {
+            const searchBar = document.getElementById('search-bar');
+            searchBar.classList.toggle('hidden');
+        });
+
+        // Funzionalità di ricerca
+        document.getElementById('search-input').addEventListener('input', function () {
+            const searchQuery = this.value.toLowerCase();
+            const answerItems = document.querySelectorAll('.answer-item');
+
+            answerItems.forEach(item => {
+                const answerText = item.innerText.toLowerCase();
+
+                if (answerText.includes(searchQuery)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+
+        // Pulsante per tornare alla Index
+        document.getElementById('back-button').addEventListener('click', function () {
+            window.location.href = 'index.html';
+        });
+
+        // Assegna automaticamente gli ID alle risposte (opzionale)
+        (function () {
+            const answerItems = document.querySelectorAll('.answer-item');
+            const lettersFound = {};
+
+            answerItems.forEach(answer => {
+                const firstLetter = answer.innerText.trim().charAt(0).toUpperCase();
+                if (!lettersFound[firstLetter]) {
+                    lettersFound[firstLetter] = true;
+                    answer.id = 'letter-' + firstLetter;
+                }
+            });
+        })();
+    </script>
+
+</body>
+
+</html>
